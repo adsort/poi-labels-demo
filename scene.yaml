@@ -583,7 +583,7 @@ layers:
 
     poi_icons:
         data: { source: osm, layer: pois }
-        filter: { name: true, not: { kind: [peak, viewpoint, bicycle_rental, car_sharing] }, $zoom: { min: 15 } }
+        filter: { not: { kind: [tree, gate] }, $zoom: { min: 15 } }
         draw:
             icons:
                 size: [[13, 12px], [15, 18px]]
@@ -616,6 +616,28 @@ layers:
                         typeface: 100 12px Helvetica
                         stroke: { color: white, width: 4 }
                         
+        parking-labels: 
+            filter:
+                kind: [parking]
+                $zoom: { min: 17 }
+            draw: 
+                pois_text:
+                    font:
+                        fill: '#666'
+                        typeface: 100 12px Helvetica
+                        stroke: { color: white, width: 4 }
+
+        bus-stop-labels: 
+            filter:
+                kind: [bus_stop, bus_station]
+                $zoom: { min: 17 }
+            draw: 
+                pois_text:
+                    font:
+                        fill: '#666'
+                        typeface: 100 12px Helvetica
+                        stroke: { color: white, width: 4 }
+
         # examples of different icons mapped to feature properties
         icons:
             adult-boutique:
