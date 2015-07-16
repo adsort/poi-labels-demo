@@ -4,7 +4,7 @@ A demo showing contextual highway styles using the [Tangram](http://github.com/t
 
 Live demo: http://tangrams.github.io/poi-labels-demo
 
-![highways demo](https://cloud.githubusercontent.com/assets/459970/5781837/ece89c72-9d83-11e4-93e2-757c464c1278.png)
+![poi label demo](https://cloud.githubusercontent.com/assets/853051/8712838/2056e0bc-2b16-11e5-9fb3-8cbc1e25287d.png)
 
 ### To run locally:
 
