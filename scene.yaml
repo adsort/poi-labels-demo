@@ -593,7 +593,8 @@ layers:
         direct-match:
             draw:
                 icons:
-                    sprite_source: kind
+                    # sprite_source: kind
+                    sprite: function() { return feature.kind }
 
         # add generic icon at high zoom, if direct match fails
         generic-icons:
