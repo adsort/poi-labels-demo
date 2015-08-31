@@ -315,7 +315,7 @@ styles:
                 filter: |
                     color.rgb += infinitGrid(v_world_position.xy, u_map_position.z)*0.05;
                     color.rgb -= grain(gl_FragCoord.xy)*0.5;
-                    
+
     buildings:
         base: polygons
         mix: tools
@@ -328,7 +328,7 @@ styles:
         base: points
         texture: pois
         interactive: True
-        
+
     pois_text:
             base: text
             shaders:
@@ -340,7 +340,7 @@ styles:
 sources:
     osm:
         type: TopoJSONTiles
-        url:  //vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-HqUVidw
+        url:  https://vector.mapzen.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-HqUVidw
         #url:  //tilestache-dev2-us-east-ext-1189213459.us-east-1.elb.amazonaws.com/osm/all/{z}/{x}/{y}.topojson?api_key=vector-tiles-qHl9ipo
 
 layers:
@@ -581,57 +581,65 @@ layers:
                     style: buildings
                     extrude: function () { return feature.height > 0 || $zoom >= 16; }
 
-    poi_icons:
-        data: { source: osm, layer: pois }
+    icons:
+        data: { source: osm, layer: [pois, landuse_labels] }
         filter: { not: { kind: [tree, gate] }, $zoom: { min: 15 } }
         draw:
             icons:
                 size: [[13, 12px], [15, 18px]]
                 interactive: true
 
-        # add generic icon at high zoom
+        # match 1:1 correlations between data and sprite name
+        direct-match:
+            draw:
+                icons:
+                    # sprite_source: kind
+                    sprite: function() { return feature.kind }
+
+        # add generic icon at high zoom, if direct match fails
         generic-icons:
-            filter: { name: true, $zoom: { min: 18 } }
-            draw: 
-                icons: { sprite: generic }
+            filter: { $zoom: { min: 18 } }
+            draw:
+                icons:
+                    sprite_default: generic
 
         # add generic icon at high zoom
         generic-labels:
             filter: { $zoom: { min: 18 } }
-            draw: 
+            draw:
                 pois_text:
                     font:
                         fill: '#666'
                         typeface: 100 12px Helvetica
                         stroke: { color: white, width: 4 }
-                        
-        park-labels: 
+
+        park-labels:
             filter:
                 kind: [park]
                 $zoom: { min: 15 }
-            draw: 
+            draw:
                 pois_text:
                     font:
                         fill: '#666'
                         typeface: 100 12px Helvetica
                         stroke: { color: white, width: 4 }
-                        
-        parking-labels: 
+
+        parking-labels:
             filter:
                 kind: [parking]
                 $zoom: { min: 17 }
-            draw: 
+            draw:
                 pois_text:
                     font:
                         fill: '#666'
                         typeface: 100 12px Helvetica
                         stroke: { color: white, width: 4 }
 
-        bus-stop-labels: 
+        bus-stop-labels:
             filter:
                 kind: [bus_stop, bus_station]
                 $zoom: { min: 17 }
-            draw: 
+            draw:
                 pois_text:
                     font:
                         fill: '#666'
@@ -652,72 +660,24 @@ layers:
             antique-shop:
                 filter: { kind: [antiques, antique-shop] }
                 draw:   { icons: { sprite: antique-shop } }
-            aquarium:
-                filter: { kind: [aquarium] }
-                draw:   { icons: { sprite: aquarium } }
-            arcade:
-                filter: { kind: [arcade] }
-                draw:   { icons: { sprite: arcade } }
             art-gallery:
                 filter: { kind: [art_gallery, art-gallery, art] }
                 draw:   { icons: { sprite: art-gallery } }
-            arts-crafts:
-                filter: { kind: [arts-crafts] }
-                draw:   { icons: { sprite: arts-crafts } }
             athletics-sports:
                 filter: { kind: [pitch, athletic_sports, recreation_ground] }
                 draw:   { icons: { sprite: athletics-sports } }
-            atm:
-                filter: { kind: [atm] }
-                draw:   { icons: { sprite: atm } }
             automotive-shop:
                 filter: { kind: [car_repair, automotive-shop, automotive, tyres] }
                 draw:   { icons: { sprite: automotive-shop } }
-            bagel-shop:
-                filter: { kind: [bagel-shop] }
-                draw:   { icons: { sprite: bagel-shop } }
             bakery:
                 filter: { kind: [bakery, pastry, chocolate] }
                 draw:   { icons: { sprite: bakery } }
-            bank:
-                filter: { kind: [bank] }
-                draw:   { icons: { sprite: bank } }
             bar:
                 filter: { kind: [pub, bar] }
                 draw:   { icons: { sprite: bar } }
-            baseball-field:
-                filter: { kind: [baseball-field] }
-                draw:   { icons: { sprite: baseball-field } }
-            basketball-court:
-                filter: { kind: [basketball-court] }
-                draw:   { icons: { sprite: basketball-court } }
-            basketball-stadium:
-                filter: { kind: [basketball-stadium] }
-                draw:   { icons: { sprite: basketball-stadium } }
-            bathroom:
-                filter: { kind: [bathroom] }
-                draw:   { icons: { sprite: bathroom } }
-            battlefield:
-                filter: { kind: [battlefield] }
-                draw:   { icons: { sprite: battlefield } }
-            bbq:
-                filter: { kind: [bbq] }
-                draw:   { icons: { sprite: bbq } }
-            beach:
-                filter: { kind: [beach] }
-                draw:   { icons: { sprite: beach } }
-            beach-resort:
-                filter: { kind: [beach-resort] }
-                draw:   { icons: { sprite: beach-resort } }
             beer-garden:
                 filter: { kind: [biergarten, beer-garden] }
                 draw:   { icons: { sprite: beer-garden } }
-            bench:
-                filter: { kind: [bench] }
-                draw:   { icons: { sprite: bench } }
-            bicycle-parking:
-                filter: { kind: [bicycle-parking] }
-                draw:   { icons: { sprite: bicycle-parking } }
             bike-shop:
                 filter: { kind: [bicycle, bicycle_rental, bike, bike_shop] }
                 draw:   { icons: { sprite: bike-shop } }
@@ -733,15 +693,9 @@ layers:
             bowling-alley:
                 filter: { kind: [bowling_alley, bowling-alley] }
                 draw:   { icons: { sprite: bowling-alley } }
-            breakfast:
-                filter: { kind: [breakfast] }
-                draw:   { icons: { sprite: breakfast } }
             bridal-shop:
                 filter: { kind: [bridal, bridal-shop] }
                 draw:   { icons: { sprite: bridal-shop } }
-            bridge:
-                filter: { kind: [bridge] }
-                draw:   { icons: { sprite: bridge } }
             building:
                 filter: { kind: [building, auditorium, terminal, hangar, retirement_home, manor, recreation_center, apartments] }
                 draw:   { icons: { sprite: building } }
@@ -751,17 +705,11 @@ layers:
             bus-station:
                 filter: { kind: [bus_stop, bus_station] }
                 draw:   { icons: { sprite: bus-station } }
-            butcher:
-                filter: { kind: [butcher] }
-                draw:   { icons: { sprite: butcher } }
             camera-store:
                 filter: { kind: [camera, camera-store, photo] }
                 draw:   { icons: { sprite: camera-store } }
             campground:
-                filter: { kind: [campground: camp_site, caravan_site] }
-                draw:   { icons: { sprite: campground } }
-            campground:
-                filter: { kind: [campground] }
+                filter: { kind: [campground, camp_site, caravan_site] }
                 draw:   { icons: { sprite: campground } }
             candy-store:
                 filter: { kind: [candy, candy-store, confectionery] }
@@ -775,9 +723,6 @@ layers:
             carribean-restaurant:
                 filter: { kind: [carribean-restaurant] }
                 draw:   { icons: { sprite: carribean-restaurant } }
-            casino:
-                filter: { kind: [casino] }
-                draw:   { icons: { sprite: casino } }
             castle:
                 filter: { kind: [castle, fort] }
                 draw:   { icons: { sprite: castle } }
@@ -790,30 +735,15 @@ layers:
             chinese-restaurant:
                 filter: { kind: [chinese-restaurant] }
                 draw:   { icons: { sprite: chinese-restaurant } }
-            church:
-                filter: { kind: [church] }
-                draw:   { icons: { sprite: church } }
-            city:
-                filter: { kind: [city] }
-                draw:   { icons: { sprite: city } }
-            clinic:
-                filter: { kind: [clinic] }
-                draw:   { icons: { sprite: clinic } }
             clothing-store:
                 filter: { kind: [clothes, chothing-store] }
                 draw:   { icons: { sprite: clothing-store } }
-            cocktail-bar:
-                filter: { kind: [cocktail-bar] }
-                draw:   { icons: { sprite: cocktail-bar } }
             coffee-shop:
                 filter: { kind: [cafe, coffee-shop] }
                 draw:   { icons: { sprite: coffee-shop } }
             college-university:
                 filter: { kind: [university, college, college-university] }
                 draw:   { icons: { sprite: college-university } }
-            comedy-club:
-                filter: { kind: [comedy-club] }
-                draw:   { icons: { sprite: comedy-club } }
             concert-hall:
                 filter: { kind: [music_venue] }
                 draw:   { icons: { sprite: concert-hall } }
@@ -823,57 +753,21 @@ layers:
             cosmetics-shop:
                 filter: { kind: [cosmetics, cosmetics-shop, beauty] }
                 draw:   { icons: { sprite: cosmetics-shop } }
-            courthouse:
-                filter: { kind: [courthouse] }
-                draw:   { icons: { sprite: courthouse } }
-            credit-union:
-                filter: { kind: [credit-union] }
-                draw:   { icons: { sprite: credit-union } }
-            cupcake-shop:
-                filter: { kind: [cupcake-shop] }
-                draw:   { icons: { sprite: cupcake-shop } }
-            daycare:
-                filter: { kind: [daycare] }
-                draw:   { icons: { sprite: daycare } }
-            dentist:
-                filter: { kind: [dentist] }
-                draw:   { icons: { sprite: dentist } }
             department-store:
                 filter: { kind: [department_store, department-store] }
                 draw:   { icons: { sprite: department-store } }
-            design-studio:
-                filter: { kind: [design-studio] }
-                draw:   { icons: { sprite: design-studio } }
-            dessert:
-                filter: { kind: [dessert] }
-                draw:   { icons: { sprite: dessert } }
             dog-run:
                 filter: { kind: [dog_park, dog_run, dog-run] }
                 draw:   { icons: { sprite: dog-run } }
-            donut:
-                filter: { kind: [donut] }
-                draw:   { icons: { sprite: donut } }
             electronics-store:
                 filter: { kind: [electronics, electronics-store, computer] }
                 draw:   { icons: { sprite: electronics-store } }
-            ev-charging-station:
-                filter: { kind: [ev-charging-station] }
-                draw:   { icons: { sprite: ev-charging-station } }
             factory:
                 filter: { kind: [factory, industrial, chimney, sub_station, substation] }
                 draw:   { icons: { sprite: factory } }
-            farm:
-                filter: { kind: [farm] }
-                draw:   { icons: { sprite: farm } }
             farmers-market:
                 filter: { kind: [farmers_market, farmers-market] }
                 draw:   { icons: { sprite: farmers-market } }
-            field:
-                filter: { kind: [field] }
-                draw:   { icons: { sprite: field } }
-            financial-service:
-                filter: { kind: [financial-service] }
-                draw:   { icons: { sprite: financial-service } }
             fire-station:
                 filter: { kind: [fire_station, fire-station] }
                 draw:   { icons: { sprite: fire-station } }
@@ -892,51 +786,15 @@ layers:
             flower-shop:
                 filter: { kind: [florist, flower-shop] }
                 draw:   { icons: { sprite: flower-shop } }
-            food-court:
-                filter: { kind: [food-court] }
-                draw:   { icons: { sprite: food-court } }
-            food-drink-shop:
-                filter: { kind: [food-drink-shop] }
-                draw:   { icons: { sprite: food-drink-shop } }
-            football-stadium:
-                filter: { kind: [football-stadium] }
-                draw:   { icons: { sprite: football-stadium } }
-            ford:
-                filter: { kind: [ford] }
-                draw:   { icons: { sprite: ford } }
-            fountain:
-                filter: { kind: [fountain] }
-                draw:   { icons: { sprite: fountain } }
-            fried-chicken-joint:
-                filter: { kind: [fried-chicken-joint] }
-                draw:   { icons: { sprite: fried-chicken-joint } }
-            fun-fair:
-                filter: { kind: [fun-fair] }
-                draw:   { icons: { sprite: fun-fair } }
             furniture-store:
                 filter: { kind: [furniture, furniture-store] }
                 draw:   { icons: { sprite: furniture-store } }
-            gaming-cafe:
-                filter: { kind: [gaming-cafe] }
-                draw:   { icons: { sprite: gaming-cafe } }
-            garden:
-                filter: { kind: [garden] }
-                draw:   { icons: { sprite: garden } }
             garden-center:
                 filter: { kind: [garden_centre, garden_center] }
                 draw:   { icons: { sprite: garden-center } }
             gas-station:
                 filter: { kind: [fuel, gas-station] }
                 draw:   { icons: { sprite: gas-station } }
-            gastropub:
-                filter: { kind: [gastropub] }
-                draw:   { icons: { sprite: gastropub } }
-            gate:
-                filter: { kind: [gate] }
-                draw:   { icons: { sprite: gate } }
-            gay-bar:
-                filter: { kind: [gay-bar] }
-                draw:   { icons: { sprite: gay-bar } }
             general-entertainment:
                 filter: { kind: [ticket, general_entertainment] }
                 draw:   { icons: { sprite: general-entertainment } }
@@ -946,18 +804,9 @@ layers:
             generic:
                 filter: { kind: [generic, subway_entrance] }
                 draw:   { icons: { sprite: generic } }
-            german-restaurant:
-                filter: { kind: [german-restaurant] }
-                draw:   { icons: { sprite: german-restaurant } }
             gift-shop:
                 filter: { kind: [gift, gift-shop] }
                 draw:   { icons: { sprite: gift-shop } }
-            golf-course:
-                filter: { kind: [golf-course] }
-                draw:   { icons: { sprite: golf-course } }
-            gourmet-shop:
-                filter: { kind: [gourmet-shop] }
-                draw:   { icons: { sprite: gourmet-shop } }
             government-building:
                 filter: { kind: [townhall, public_building, embassy] }
                 draw:   { icons: { sprite: government-building } }
@@ -973,90 +822,30 @@ layers:
             hiking-trail:
                 filter: { kind: [trailhead, hiking_trail] }
                 draw:   { icons: { sprite: hiking-trail } }
-            historic-site:
-                filter: { kind: [historic-site] }
-                draw:   { icons: { sprite: historic-site } }
-            hobby-shop:
-                filter: { kind: [hobby-shop] }
-                draw:   { icons: { sprite: hobby-shop } }
-            hockey-field:
-                filter: { kind: [hockey-field] }
-                draw:   { icons: { sprite: hockey-field } }
-            hospital:
-                filter: { kind: [hospital] }
-                draw:   { icons: { sprite: hospital } }
-            hot-dog-joint:
-                filter: { kind: [hot-dog-joint] }
-                draw:   { icons: { sprite: hot-dog-joint } }
-            hot-pot-restaurant:
-                filter: { kind: [hot-pot-restaurant] }
-                draw:   { icons: { sprite: hot-pot-restaurant } }
-            hot-spring:
-                filter: { kind: [hot-spring] }
-                draw:   { icons: { sprite: hot-spring } }
             hotel:
                 filter: { kind: [hotel, motel, hostel] }
                 draw:   { icons: { sprite: hotel } }
             hunting-supply:
                 filter: { kind: [hunting, fishing] }
                 draw:   { icons: { sprite: hunting-supply } }
-            ice-cream-shop:
-                filter: { kind: [ice_cream] }
-                draw:   { icons: { sprite: ice-cream-shop } }
             information:
                 filter: { kind: [info, information] }
                 draw:   { icons: { sprite: information } }
-            internet-cafe:
-                filter: { kind: [internet-cafe] }
-                draw:   { icons: { sprite: internet-cafe } }
-            island:
-                filter: { kind: [island] }
-                draw:   { icons: { sprite: island } }
             jewelry-store:
                 filter: { kind: [jewelry, jewelry_store, jewelry-store] }
                 draw:   { icons: { sprite: jewelry-store } }
-            karaoke:
-                filter: { kind: [karaoke] }
-                draw:   { icons: { sprite: karaoke } }
-            lake:
-                filter: { kind: [lake] }
-                draw:   { icons: { sprite: lake } }
             landmark:
                 filter: { kind: [landmark, memorial, monument, wayside_shrine, tower, beacon] }
                 draw:   { icons: { sprite: landmark } }
             laundry:
                 filter: { kind: [laundry, dry_cleaning] }
                 draw:   { icons: { sprite: laundry } }
-            library:
-                filter: { kind: [library] }
-                draw:   { icons: { sprite: library } }
-            light-rail:
-                filter: { kind: [light-rail] }
-                draw:   { icons: { sprite: light-rail } }
-            lighthouse:
-                filter: { kind: [lighthouse] }
-                draw:   { icons: { sprite: lighthouse } }
             liquor-store:
                 filter: { kind: [alcohol, liquor-store, liquor] }
                 draw:   { icons: { sprite: liquor-store } }
-            lounge:
-                filter: { kind: [lounge] }
-                draw:   { icons: { sprite: lounge } }
-            mall:
-                filter: { kind: [mall] }
-                draw:   { icons: { sprite: mall } }
-            marijuana-dispensary:
-                filter: { kind: [marijuana-dispensary] }
-                draw:   { icons: { sprite: marijuana-dispensary } }
             market:
                 filter: { kind: [market, variety_store, boutique, dairy] }
                 draw:   { icons: { sprite: market } }
-            medical-center:
-                filter: { kind: [medical-center] }
-                draw:   { icons: { sprite: medical-center } }
-            military-base:
-                filter: { kind: [military-base] }
-                draw:   { icons: { sprite: military-base } }
             mine:
                 filter: { kind: [mind, quarry, mineshaft, adit] }
                 draw:   { icons: { sprite: mine } }
@@ -1066,12 +855,6 @@ layers:
             mobile-phone-shop:
                 filter: { kind: [mobile_phone] }
                 draw:   { icons: { sprite: mobile-phone-shop } }
-            molecular-gastronomy:
-                filter: { kind: [molecular-gastronomy] }
-                draw:   { icons: { sprite: molecular-gastronomy } }
-            mosque:
-                filter: { kind: [mosque] }
-                draw:   { icons: { sprite: mosque } }
             motorcycle-shop:
                 filter: { kind: [motorcycle, motorcycle_shop, motorcycle_repair] }
                 draw:   { icons: { sprite: motorcycle-shop } }
@@ -1081,33 +864,18 @@ layers:
             movie-theatre:
                 filter: { kind: [cinema, movie-theatre, movie-theater] }
                 draw:   { icons: { sprite: movie-theatre } }
-            moving-target:
-                filter: { kind: [moving-target] }
-                draw:   { icons: { sprite: moving-target } }
             museum:
                 filter: { kind: [museum, observatory] }
                 draw:   { icons: { sprite: museum } }
             music-store:
                 filter: { kind: [music, music-store, musical_instrument] }
                 draw:   { icons: { sprite: music-store } }
-            music-venue:
-                filter: { kind: [music-venue] }
-                draw:   { icons: { sprite: music-venue } }
-            nail-salon:
-                filter: { kind: [nail-salon] }
-                draw:   { icons: { sprite: nail-salon } }
-            neighborhood:
-                filter: { kind: [neighborhood] }
-                draw:   { icons: { sprite: neighborhood } }
             newsstand:
                 filter: { kind: [kiosk, newsstand, newsagent] }
                 draw:   { icons: { sprite: newsstand } }
             nightlife:
                 filter: { kind: [nightclub, nightlife] }
                 draw:   { icons: { sprite: nightlife } }
-            noodle-shop:
-                filter: { kind: [noodle-shop] }
-                draw:   { icons: { sprite: noodle-shop } }
             office:
                 filter: { kind: [insurance, office] }
                 draw:   { icons: { sprite: office } }
@@ -1117,15 +885,6 @@ layers:
             optical-shop:
                 filter: { kind: [optician, optical_shop, optical-shop] }
                 draw:   { icons: { sprite: optical-shop } }
-            other-outdoors:
-                filter: { kind: [other-outdoors] }
-                draw:   { icons: { sprite: other-outdoors } }
-            park:
-                filter: { kind: [park] }
-                draw:   { icons: { sprite: park } }
-            parking:
-                filter: { kind: [parking] }
-                draw:   { icons: { sprite: parking } }
             performing-arts:
                 filter: { kind: [theater, performing-arts] }
                 draw:   { icons: { sprite: performing-arts } }
@@ -1141,18 +900,6 @@ layers:
             picnic-spot:
                 filter: { kind: [picnic_site, picnic_spot, picnic-spot] }
                 draw:   { icons: { sprite: picnic-spot } }
-            pier:
-                filter: { kind: [pier] }
-                draw:   { icons: { sprite: pier } }
-            pizza:
-                filter: { kind: [pizza] }
-                draw:   { icons: { sprite: pizza } }
-            playground:
-                filter: { kind: [playground] }
-                draw:   { icons: { sprite: playground } }
-            police:
-                filter: { kind: [police] }
-                draw:   { icons: { sprite: police } }
             pool:
                 filter: { kind: [pool, swimming_pool, water_park] }
                 draw:   { icons: { sprite: pool } }
@@ -1165,21 +912,9 @@ layers:
             power-pylon:
                 filter: { kind: [tower, power-pylon, pylon] }
                 draw:   { icons: { sprite: power-pylon } }
-            public-art:
-                filter: { kind: [public-art] }
-                draw:   { icons: { sprite: public-art } }
-            racetrack:
-                filter: { kind: [racetrack] }
-                draw:   { icons: { sprite: racetrack } }
-            ramen:
-                filter: { kind: [ramen] }
-                draw:   { icons: { sprite: ramen } }
             real-estate:
                 filter: { kind: [estate_agent, real_estate] }
                 draw:   { icons: { sprite: real-estate } }
-            record-shop:
-                filter: { kind: [record-shop] }
-                draw:   { icons: { sprite: record-shop } }
             recycling-facility:
                 filter: { kind: [recycling, recycling-facility] }
                 draw:   { icons: { sprite: recycling-facility } }
@@ -1192,12 +927,6 @@ layers:
             restaurant:
                 filter: { kind: [restaurant, deli] }
                 draw:   { icons: { sprite: restaurant } }
-            river:
-                filter: { kind: [river] }
-                draw:   { icons: { sprite: river } }
-            road:
-                filter: { kind: [road] }
-                draw:   { icons: { sprite: road } }
             ruin:
                 filter: { kind: [ruins, archaeological_site] }
                 draw:   { icons: { sprite: ruin } }
@@ -1213,27 +942,9 @@ layers:
             shoe-store:
                 filter: { kind: [shoes, shoe-store, shoe_store] }
                 draw:   { icons: { sprite: shoe-store } }
-            skate-park:
-                filter: { kind: [skate-park] }
-                draw:   { icons: { sprite: skate-park } }
-            skating-rink:
-                filter: { kind: [skating-rink] }
-                draw:   { icons: { sprite: skating-rink } }
-            ski-area:
-                filter: { kind: [ski-area] }
-                draw:   { icons: { sprite: ski-area } }
             smoke-shop:
                 filter: { kind: [smoke_shop, tobacco] }
                 draw:   { icons: { sprite: smoke-shop } }
-            soccer-field:
-                filter: { kind: [soccer-field] }
-                draw:   { icons: { sprite: soccer-field } }
-            soccer-stadium:
-                filter: { kind: [soccer-stadium] }
-                draw:   { icons: { sprite: soccer-stadium } }
-            soup-place:
-                filter: { kind: [soup-place] }
-                draw:   { icons: { sprite: soup-place } }
             spa-massage:
                 filter: { kind: [spa, spa-massage, sauna, massage] }
                 draw:   { icons: { sprite: spa-massage } }
@@ -1243,54 +954,18 @@ layers:
             sporting-goods-shop:
                 filter: { kind: [sporting_goods, sporting-goods-shop, sports, outdoor] }
                 draw:   { icons: { sprite: sporting-goods-shop } }
-            spring:
-                filter: { kind: [spring] }
-                draw:   { icons: { sprite: spring } }
             stable:
                 filter: { kind: [stable, horse_riding] }
                 draw:   { icons: { sprite: stable } }
-            stadium:
-                filter: { kind: [stadium] }
-                draw:   { icons: { sprite: stadium } }
-            steakhouse:
-                filter: { kind: [steakhouse] }
-                draw:   { icons: { sprite: steakhouse } }
             storage-facility:
                 filter: { kind: [storage, storage-facility] }
                 draw:   { icons: { sprite: storage-facility } }
-            subway:
-                filter: { kind: [subway] }
-                draw:   { icons: { sprite: subway } }
-            surf-shop:
-                filter: { kind: [surf-shop] }
-                draw:   { icons: { sprite: surf-shop } }
-            sushi-restaurant:
-                filter: { kind: [sushi-restaurant] }
-                draw:   { icons: { sprite: sushi-restaurant } }
-            swimming:
-                filter: { kind: [swimming] }
-                draw:   { icons: { sprite: swimming } }
-            synagogue:
-                filter: { kind: [synagogue] }
-                draw:   { icons: { sprite: synagogue } }
             tailor-shop:
                 filter: { kind: [tailor, tailor-shop] }
                 draw:   { icons: { sprite: tailor-shop } }
-            tanning-salon:
-                filter: { kind: [tanning-salon] }
-                draw:   { icons: { sprite: tanning-salon } }
             tattoo-parlor:
                 filter: { kind: [tattoo, tattoo_parlor, tattoo-parlor] }
                 draw:   { icons: { sprite: tattoo-parlor } }
-            taxi:
-                filter: { kind: [taxi] }
-                draw:   { icons: { sprite: taxi } }
-            tea-room:
-                filter: { kind: [tea-room] }
-                draw:   { icons: { sprite: tea-room } }
-            tennis:
-                filter: { kind: [tennis] }
-                draw:   { icons: { sprite: tennis } }
             theme-park:
                 filter: { kind: [theme_park, theme-park, miniature_golf] }
                 draw:   { icons: { sprite: theme-park } }
@@ -1303,18 +978,12 @@ layers:
             toy-game-store:
                 filter: { kind: [toys, toy-game-store, baby_goods] }
                 draw:   { icons: { sprite: toy-game-store } }
-            track:
-                filter: { kind: [track] }
-                draw:   { icons: { sprite: track } }
             traffic-signal:
                 filter: { kind: [traffic_signals] }
                 draw:   { icons: { sprite: traffic-signal } }
             train-station:
                 filter: { kind: [station, train-staion] }
                 draw:   { icons: { sprite: train-station } }
-            travel-agency:
-                filter: { kind: [travel-agency] }
-                draw:   { icons: { sprite: travel-agency } }
             veterinarian:
                 filter: { kind: [pet_care, veterinarian, veterinary] }
                 draw:   { icons: { sprite: veterinarian } }
@@ -1327,817 +996,15 @@ layers:
             view-point:
                 filter: { kind: [viewpoint, view_point, view-point, vista] }
                 draw:   { icons: { sprite: view-point } }
-            vineyard:
-                filter: { kind: [vineyard] }
-                draw:   { icons: { sprite: vineyard } }
-            volcano:
-                filter: { kind: [volcano] }
-                draw:   { icons: { sprite: volcano } }
-            volleyball-court:
-                filter: { kind: [volleyball-court] }
-                draw:   { icons: { sprite: volleyball-court } }
             well:
                 filter: { kind: [well, water_well] }
                 draw:   { icons: { sprite: well } }
-            whisky-bar:
-                filter: { kind: [whisky-bar] }
-                draw:   { icons: { sprite: whisky-bar } }
-            wine-bar:
-                filter: { kind: [wine-bar] }
-                draw:   { icons: { sprite: wine-bar } }
             wine-shop:
                 filter: { kind: [wine, wine-shop] }
                 draw:   { icons: { sprite: wine-shop } }
             winery:
                 filter: { kind: [winery, wine] }
                 draw:   { icons: { sprite: winery } }
-            wings-joint:
-                filter: { kind: [wings-joint] }
-                draw:   { icons: { sprite: wings-joint } }
-            zoo:
-                filter: { kind: [zoo] }
-                draw:   { icons: { sprite: zoo } }
-                
-    landuse_labels:
-        data: { source: osm, layer: landuse_labels }
-        filter: 
-            name: true
-            not: { kind: [farm] }
-            any:
-                # show labels for smaller landuse areas at higher zooms
-                - { $zoom: { min: 9 },  area: { min: 100000000 } }
-                - { $zoom: { min: 10 }, area: { min: 100000000 } }
-                - { $zoom: { min: 11 }, area: { min: 25000000 } }
-                - { $zoom: { min: 12 }, area: { min: 5000000 } }
-                - { $zoom: { min: 13 }, area: { min: 2000000 } }
-                - { $zoom: { min: 14 }, area: { min: 100000 } }
-                - { $zoom: { min: 15 }, area: { min: 50000 } }
-                - { $zoom: { min: 15 }, area: { min: 10000 } }
-                - { $zoom: { min: 18 } }
-        draw:
-            icons:
-                size: [[13, 12px], [15, 18px]]
-                interactive: true
-
-        # add generic icon at high zoom
-        generic-icons:
-            filter: { $zoom: { min: 18 } }
-            draw: 
-                icons: { sprite: generic }
-
-        # add generic icon at high zoom
-        generic-labels:
-            #filter: { $zoom: { min: 18 } }
-            draw: 
-                pois_text:
-                    font:
-                        fill: '#666'
-                        typeface: 100 12px Helvetica
-                        stroke: { color: white, width: 4 }
-                        
-
-        # examples of different icons mapped to feature properties
-        icons:
-            adult-boutique:
-                filter: { kind: [erotic, adult_boutique] }
-                draw:   { icons: { sprite: adult-boutique } }
-            airport:
-                filter: { kind: [airport, aerodrome] }
-                draw:   { icons: { sprite: airport } }
-            animal-shelter:
-                filter: { kind: [animal_shelter, animal-shelter, animal_boarding] }
-                draw:   { icons: { sprite: animal-shelter } }
-            antique-shop:
-                filter: { kind: [antiques, antique-shop] }
-                draw:   { icons: { sprite: antique-shop } }
-            aquarium:
-                filter: { kind: [aquarium] }
-                draw:   { icons: { sprite: aquarium } }
-            arcade:
-                filter: { kind: [arcade] }
-                draw:   { icons: { sprite: arcade } }
-            art-gallery:
-                filter: { kind: [art_gallery, art-gallery, art] }
-                draw:   { icons: { sprite: art-gallery } }
-            arts-crafts:
-                filter: { kind: [arts-crafts] }
-                draw:   { icons: { sprite: arts-crafts } }
-            athletics-sports:
-                filter: { kind: [pitch, athletic_sports, recreation_ground] }
-                draw:   { icons: { sprite: athletics-sports } }
-            atm:
-                filter: { kind: [atm] }
-                draw:   { icons: { sprite: atm } }
-            automotive-shop:
-                filter: { kind: [car_repair, automotive-shop, automotive, tyres] }
-                draw:   { icons: { sprite: automotive-shop } }
-            bagel-shop:
-                filter: { kind: [bagel-shop] }
-                draw:   { icons: { sprite: bagel-shop } }
-            bakery:
-                filter: { kind: [bakery, pastry, chocolate] }
-                draw:   { icons: { sprite: bakery } }
-            bank:
-                filter: { kind: [bank] }
-                draw:   { icons: { sprite: bank } }
-            bar:
-                filter: { kind: [pub, bar] }
-                draw:   { icons: { sprite: bar } }
-            baseball-field:
-                filter: { kind: [baseball-field] }
-                draw:   { icons: { sprite: baseball-field } }
-            basketball-court:
-                filter: { kind: [basketball-court] }
-                draw:   { icons: { sprite: basketball-court } }
-            basketball-stadium:
-                filter: { kind: [basketball-stadium] }
-                draw:   { icons: { sprite: basketball-stadium } }
-            bathroom:
-                filter: { kind: [bathroom] }
-                draw:   { icons: { sprite: bathroom } }
-            battlefield:
-                filter: { kind: [battlefield] }
-                draw:   { icons: { sprite: battlefield } }
-            bbq:
-                filter: { kind: [bbq] }
-                draw:   { icons: { sprite: bbq } }
-            beach:
-                filter: { kind: [beach] }
-                draw:   { icons: { sprite: beach } }
-            beach-resort:
-                filter: { kind: [beach-resort] }
-                draw:   { icons: { sprite: beach-resort } }
-            beer-garden:
-                filter: { kind: [biergarten, beer-garden] }
-                draw:   { icons: { sprite: beer-garden } }
-            bench:
-                filter: { kind: [bench] }
-                draw:   { icons: { sprite: bench } }
-            bicycle-parking:
-                filter: { kind: [bicycle-parking] }
-                draw:   { icons: { sprite: bicycle-parking } }
-            bike-shop:
-                filter: { kind: [bicycle, bicycle_rental, bike, bike_shop] }
-                draw:   { icons: { sprite: bike-shop } }
-            boat-ferry:
-                filter: { kind: [ferry_terminal, boat-ferry, ferry-boat, ferry] }
-                draw:   { icons: { sprite: boat-ferry } }
-            boat-ramp:
-                filter: { kind: [slipway, boat-ramp, boat_ramp] }
-                draw:   { icons: { sprite: boat-ramp } }
-            bookstore:
-                filter: { kind: [books, bookstore] }
-                draw:   { icons: { sprite: bookstore } }
-            bowling-alley:
-                filter: { kind: [bowling_alley, bowling-alley] }
-                draw:   { icons: { sprite: bowling-alley } }
-            breakfast:
-                filter: { kind: [breakfast] }
-                draw:   { icons: { sprite: breakfast } }
-            bridal-shop:
-                filter: { kind: [bridal, bridal-shop] }
-                draw:   { icons: { sprite: bridal-shop } }
-            bridge:
-                filter: { kind: [bridge] }
-                draw:   { icons: { sprite: bridge } }
-            building:
-                filter: { kind: [building, auditorium, terminal, hangar, retirement_home, manor, recreation_center, apartments] }
-                draw:   { icons: { sprite: building } }
-            burger:
-                filter: { kind: [fast_food, burger] }
-                draw:   { icons: { sprite: burger } }
-            bus-station:
-                filter: { kind: [bus_stop, bus_station] }
-                draw:   { icons: { sprite: bus-station } }
-            butcher:
-                filter: { kind: [butcher] }
-                draw:   { icons: { sprite: butcher } }
-            camera-store:
-                filter: { kind: [camera, camera-store, photo] }
-                draw:   { icons: { sprite: camera-store } }
-            campground:
-                filter: { kind: [campground: camp_site, caravan_site] }
-                draw:   { icons: { sprite: campground } }
-            campground:
-                filter: { kind: [campground] }
-                draw:   { icons: { sprite: campground } }
-            candy-store:
-                filter: { kind: [candy, candy-store, confectionery] }
-                draw:   { icons: { sprite: candy-store } }
-            car-dealership:
-                filter: { kind: [car, car-dealership] }
-                draw:   { icons: { sprite: car-dealership } }
-            car-wash:
-                filter: { kind: [car_wash, car-wash] }
-                draw:   { icons: { sprite: car-wash } }
-            carribean-restaurant:
-                filter: { kind: [carribean-restaurant] }
-                draw:   { icons: { sprite: carribean-restaurant } }
-            casino:
-                filter: { kind: [casino] }
-                draw:   { icons: { sprite: casino } }
-            castle:
-                filter: { kind: [castle, fort] }
-                draw:   { icons: { sprite: castle } }
-            cemetery:
-                filter: { kind: [grave_yard, cemetery] }
-                draw:   { icons: { sprite: cemetery } }
-            cheese-shop:
-                filter: { kind: [cheese, cheese-shop] }
-                draw:   { icons: { sprite: cheese-shop } }
-            chinese-restaurant:
-                filter: { kind: [chinese-restaurant] }
-                draw:   { icons: { sprite: chinese-restaurant } }
-            church:
-                filter: { kind: [church] }
-                draw:   { icons: { sprite: church } }
-            city:
-                filter: { kind: [city] }
-                draw:   { icons: { sprite: city } }
-            clinic:
-                filter: { kind: [clinic] }
-                draw:   { icons: { sprite: clinic } }
-            clothing-store:
-                filter: { kind: [clothes, chothing-store] }
-                draw:   { icons: { sprite: clothing-store } }
-            cocktail-bar:
-                filter: { kind: [cocktail-bar] }
-                draw:   { icons: { sprite: cocktail-bar } }
-            coffee-shop:
-                filter: { kind: [cafe, coffee-shop] }
-                draw:   { icons: { sprite: coffee-shop } }
-            college-university:
-                filter: { kind: [university, college, college-university] }
-                draw:   { icons: { sprite: college-university } }
-            comedy-club:
-                filter: { kind: [comedy-club] }
-                draw:   { icons: { sprite: comedy-club } }
-            concert-hall:
-                filter: { kind: [music_venue] }
-                draw:   { icons: { sprite: concert-hall } }
-            convenience-store:
-                filter: { kind: [convenience, convenience-store, convenience_store, beverages] }
-                draw:   { icons: { sprite: convenience-store } }
-            cosmetics-shop:
-                filter: { kind: [cosmetics, cosmetics-shop, beauty] }
-                draw:   { icons: { sprite: cosmetics-shop } }
-            courthouse:
-                filter: { kind: [courthouse] }
-                draw:   { icons: { sprite: courthouse } }
-            credit-union:
-                filter: { kind: [credit-union] }
-                draw:   { icons: { sprite: credit-union } }
-            cupcake-shop:
-                filter: { kind: [cupcake-shop] }
-                draw:   { icons: { sprite: cupcake-shop } }
-            daycare:
-                filter: { kind: [daycare] }
-                draw:   { icons: { sprite: daycare } }
-            dentist:
-                filter: { kind: [dentist] }
-                draw:   { icons: { sprite: dentist } }
-            department-store:
-                filter: { kind: [department_store, department-store] }
-                draw:   { icons: { sprite: department-store } }
-            design-studio:
-                filter: { kind: [design-studio] }
-                draw:   { icons: { sprite: design-studio } }
-            dessert:
-                filter: { kind: [dessert] }
-                draw:   { icons: { sprite: dessert } }
-            dog-run:
-                filter: { kind: [dog_park, dog_run, dog-run] }
-                draw:   { icons: { sprite: dog-run } }
-            donut:
-                filter: { kind: [donut] }
-                draw:   { icons: { sprite: donut } }
-            electronics-store:
-                filter: { kind: [electronics, electronics-store, computer] }
-                draw:   { icons: { sprite: electronics-store } }
-            ev-charging-station:
-                filter: { kind: [ev-charging-station] }
-                draw:   { icons: { sprite: ev-charging-station } }
-            factory:
-                filter: { kind: [factory, industrial, chimney, sub_station, substation] }
-                draw:   { icons: { sprite: factory } }
-            farm:
-                filter: { kind: [farm] }
-                draw:   { icons: { sprite: farm } }
-            farmers-market:
-                filter: { kind: [farmers_market, farmers-market] }
-                draw:   { icons: { sprite: farmers-market } }
-            field:
-                filter: { kind: [field] }
-                draw:   { icons: { sprite: field } }
-            financial-service:
-                filter: { kind: [financial-service] }
-                draw:   { icons: { sprite: financial-service } }
-            fire-station:
-                filter: { kind: [fire_station, fire-station] }
-                draw:   { icons: { sprite: fire-station } }
-            fish-market:
-                filter: { kind: [fish, fish-market, seafood, fishmonger] }
-                draw:   { icons: { sprite: fish-market } }
-            fishing-spot:
-                filter: { kind: [fishing_spot, fishing-spot, fishing] }
-                draw:   { icons: { sprite: fishing-spot } }
-            fitness:
-                filter: { kind: [gym, fitness, fitness_center] }
-                draw:   { icons: { sprite: fitness } }
-            flea-market:
-                filter: { kind: [flea_market, flea-market] }
-                draw:   { icons: { sprite: flea-market } }
-            flower-shop:
-                filter: { kind: [florist, flower-shop] }
-                draw:   { icons: { sprite: flower-shop } }
-            food-court:
-                filter: { kind: [food-court] }
-                draw:   { icons: { sprite: food-court } }
-            food-drink-shop:
-                filter: { kind: [food-drink-shop] }
-                draw:   { icons: { sprite: food-drink-shop } }
-            football-stadium:
-                filter: { kind: [football-stadium] }
-                draw:   { icons: { sprite: football-stadium } }
-            ford:
-                filter: { kind: [ford] }
-                draw:   { icons: { sprite: ford } }
-            fountain:
-                filter: { kind: [fountain] }
-                draw:   { icons: { sprite: fountain } }
-            fried-chicken-joint:
-                filter: { kind: [fried-chicken-joint] }
-                draw:   { icons: { sprite: fried-chicken-joint } }
-            fun-fair:
-                filter: { kind: [fun-fair] }
-                draw:   { icons: { sprite: fun-fair } }
-            furniture-store:
-                filter: { kind: [furniture, furniture-store] }
-                draw:   { icons: { sprite: furniture-store } }
-            gaming-cafe:
-                filter: { kind: [gaming-cafe] }
-                draw:   { icons: { sprite: gaming-cafe } }
-            garden:
-                filter: { kind: [garden] }
-                draw:   { icons: { sprite: garden } }
-            garden-center:
-                filter: { kind: [garden_centre, garden_center] }
-                draw:   { icons: { sprite: garden-center } }
-            gas-station:
-                filter: { kind: [fuel, gas-station] }
-                draw:   { icons: { sprite: gas-station } }
-            gastropub:
-                filter: { kind: [gastropub] }
-                draw:   { icons: { sprite: gastropub } }
-            gate:
-                filter: { kind: [gate] }
-                draw:   { icons: { sprite: gate } }
-            gay-bar:
-                filter: { kind: [gay-bar] }
-                draw:   { icons: { sprite: gay-bar } }
-            general-entertainment:
-                filter: { kind: [ticket, general_entertainment] }
-                draw:   { icons: { sprite: general-entertainment } }
-            general-travel:
-                filter: { kind: [general-travel] }
-                draw:   { icons: { sprite: general-travel } }
-            generic:
-                filter: { kind: [generic, subway_entrance] }
-                draw:   { icons: { sprite: generic } }
-            german-restaurant:
-                filter: { kind: [german-restaurant] }
-                draw:   { icons: { sprite: german-restaurant } }
-            gift-shop:
-                filter: { kind: [gift, gift-shop] }
-                draw:   { icons: { sprite: gift-shop } }
-            golf-course:
-                filter: { kind: [golf-course] }
-                draw:   { icons: { sprite: golf-course } }
-            gourmet-shop:
-                filter: { kind: [gourmet-shop] }
-                draw:   { icons: { sprite: gourmet-shop } }
-            government-building:
-                filter: { kind: [townhall, public_building, embassy] }
-                draw:   { icons: { sprite: government-building } }
-            grocery-store:
-                filter: { kind: [supermarket, grocery-store, health_food, greengrocer] }
-                draw:   { icons: { sprite: grocery-store } }
-            harbor-marina:
-                filter: { kind: [marina, harbor, harbor-marina, harbor_marina, dock, mooring] }
-                draw:   { icons: { sprite: harbor-marina } }
-            hardware-store:
-                filter: { kind: [hardware, hardware-store, doityourself, paint] }
-                draw:   { icons: { sprite: hardware-store } }
-            hiking-trail:
-                filter: { kind: [trailhead, hiking_trail] }
-                draw:   { icons: { sprite: hiking-trail } }
-            historic-site:
-                filter: { kind: [historic-site] }
-                draw:   { icons: { sprite: historic-site } }
-            hobby-shop:
-                filter: { kind: [hobby-shop] }
-                draw:   { icons: { sprite: hobby-shop } }
-            hockey-field:
-                filter: { kind: [hockey-field] }
-                draw:   { icons: { sprite: hockey-field } }
-            hospital:
-                filter: { kind: [hospital] }
-                draw:   { icons: { sprite: hospital } }
-            hot-dog-joint:
-                filter: { kind: [hot-dog-joint] }
-                draw:   { icons: { sprite: hot-dog-joint } }
-            hot-pot-restaurant:
-                filter: { kind: [hot-pot-restaurant] }
-                draw:   { icons: { sprite: hot-pot-restaurant } }
-            hot-spring:
-                filter: { kind: [hot-spring] }
-                draw:   { icons: { sprite: hot-spring } }
-            hotel:
-                filter: { kind: [hotel, motel, hostel] }
-                draw:   { icons: { sprite: hotel } }
-            hunting-supply:
-                filter: { kind: [hunting, fishing] }
-                draw:   { icons: { sprite: hunting-supply } }
-            ice-cream-shop:
-                filter: { kind: [ice_cream] }
-                draw:   { icons: { sprite: ice-cream-shop } }
-            information:
-                filter: { kind: [info, information] }
-                draw:   { icons: { sprite: information } }
-            internet-cafe:
-                filter: { kind: [internet-cafe] }
-                draw:   { icons: { sprite: internet-cafe } }
-            island:
-                filter: { kind: [island] }
-                draw:   { icons: { sprite: island } }
-            jewelry-store:
-                filter: { kind: [jewelry, jewelry_store, jewelry-store] }
-                draw:   { icons: { sprite: jewelry-store } }
-            karaoke:
-                filter: { kind: [karaoke] }
-                draw:   { icons: { sprite: karaoke } }
-            lake:
-                filter: { kind: [lake] }
-                draw:   { icons: { sprite: lake } }
-            landmark:
-                filter: { kind: [landmark, memorial, monument, wayside_shrine, tower, beacon] }
-                draw:   { icons: { sprite: landmark } }
-            laundry:
-                filter: { kind: [laundry, dry_cleaning] }
-                draw:   { icons: { sprite: laundry } }
-            library:
-                filter: { kind: [library] }
-                draw:   { icons: { sprite: library } }
-            light-rail:
-                filter: { kind: [light-rail] }
-                draw:   { icons: { sprite: light-rail } }
-            lighthouse:
-                filter: { kind: [lighthouse] }
-                draw:   { icons: { sprite: lighthouse } }
-            liquor-store:
-                filter: { kind: [alcohol, liquor-store, liquor] }
-                draw:   { icons: { sprite: liquor-store } }
-            lounge:
-                filter: { kind: [lounge] }
-                draw:   { icons: { sprite: lounge } }
-            mall:
-                filter: { kind: [mall] }
-                draw:   { icons: { sprite: mall } }
-            marijuana-dispensary:
-                filter: { kind: [marijuana-dispensary] }
-                draw:   { icons: { sprite: marijuana-dispensary } }
-            market:
-                filter: { kind: [market, variety_store, boutique, dairy] }
-                draw:   { icons: { sprite: market } }
-            medical-center:
-                filter: { kind: [medical-center] }
-                draw:   { icons: { sprite: medical-center } }
-            military-base:
-                filter: { kind: [military-base] }
-                draw:   { icons: { sprite: military-base } }
-            mine:
-                filter: { kind: [mind, quarry, mineshaft, adit] }
-                draw:   { icons: { sprite: mine } }
-            miscellaneous-shop:
-                filter: { kind: [houseware, miscellaneous-shop] }
-                draw:   { icons: { sprite: miscellaneous-shop } }
-            mobile-phone-shop:
-                filter: { kind: [mobile_phone] }
-                draw:   { icons: { sprite: mobile-phone-shop } }
-            molecular-gastronomy:
-                filter: { kind: [molecular-gastronomy] }
-                draw:   { icons: { sprite: molecular-gastronomy } }
-            mosque:
-                filter: { kind: [mosque] }
-                draw:   { icons: { sprite: mosque } }
-            motorcycle-shop:
-                filter: { kind: [motorcycle, motorcycle_shop, motorcycle_repair] }
-                draw:   { icons: { sprite: motorcycle-shop } }
-            mountain:
-                filter: { kind: [mountain, peak] }
-                draw:   { icons: { sprite: mountain } }
-            movie-theatre:
-                filter: { kind: [cinema, movie-theatre, movie-theater] }
-                draw:   { icons: { sprite: movie-theatre } }
-            moving-target:
-                filter: { kind: [moving-target] }
-                draw:   { icons: { sprite: moving-target } }
-            museum:
-                filter: { kind: [museum, observatory] }
-                draw:   { icons: { sprite: museum } }
-            music-store:
-                filter: { kind: [music, music-store, musical_instrument] }
-                draw:   { icons: { sprite: music-store } }
-            music-venue:
-                filter: { kind: [music-venue] }
-                draw:   { icons: { sprite: music-venue } }
-            nail-salon:
-                filter: { kind: [nail-salon] }
-                draw:   { icons: { sprite: nail-salon } }
-            neighborhood:
-                filter: { kind: [neighborhood] }
-                draw:   { icons: { sprite: neighborhood } }
-            newsstand:
-                filter: { kind: [kiosk, newsstand, newsagent] }
-                draw:   { icons: { sprite: newsstand } }
-            nightlife:
-                filter: { kind: [nightclub, nightlife] }
-                draw:   { icons: { sprite: nightlife } }
-            noodle-shop:
-                filter: { kind: [noodle-shop] }
-                draw:   { icons: { sprite: noodle-shop } }
-            office:
-                filter: { kind: [insurance, office] }
-                draw:   { icons: { sprite: office } }
-            office-supplies:
-                filter: { kind: [office_supplies, office-supplies, stationery] }
-                draw:   { icons: { sprite: office-supplies } }
-            optical-shop:
-                filter: { kind: [optician, optical_shop, optical-shop] }
-                draw:   { icons: { sprite: optical-shop } }
-            other-outdoors:
-                filter: { kind: [other-outdoors] }
-                draw:   { icons: { sprite: other-outdoors } }
-            park:
-                filter: { kind: [park] }
-                draw:   { icons: { sprite: park } }
-            parking:
-                filter: { kind: [parking] }
-                draw:   { icons: { sprite: parking } }
-            performing-arts:
-                filter: { kind: [theater, performing-arts] }
-                draw:   { icons: { sprite: performing-arts } }
-            pet-store:
-                filter: { kind: [pet, pet-store, pet-service, pet_store] }
-                draw:   { icons: { sprite: pet-store } }
-            pharmacy:
-                filter: { kind: [pharmacy, chemist] }
-                draw:   { icons: { sprite: pharmacy } }
-            photography-lab:
-                filter: { kind: [photo_studio, photography_lab] }
-                draw:   { icons: { sprite: photography-lab } }
-            picnic-spot:
-                filter: { kind: [picnic_site, picnic_spot, picnic-spot] }
-                draw:   { icons: { sprite: picnic-spot } }
-            pier:
-                filter: { kind: [pier] }
-                draw:   { icons: { sprite: pier } }
-            pizza:
-                filter: { kind: [pizza] }
-                draw:   { icons: { sprite: pizza } }
-            playground:
-                filter: { kind: [playground] }
-                draw:   { icons: { sprite: playground } }
-            police:
-                filter: { kind: [police] }
-                draw:   { icons: { sprite: police } }
-            pool:
-                filter: { kind: [pool, swimming_pool, water_park] }
-                draw:   { icons: { sprite: pool } }
-            pool-hall:
-                filter: { kind: [billiards, pool-hall] }
-                draw:   { icons: { sprite: pool-hall } }
-            post-office:
-                filter: { kind: [post_office, post-office] }
-                draw:   { icons: { sprite: post-office } }
-            power-pylon:
-                filter: { kind: [tower, power-pylon, pylon] }
-                draw:   { icons: { sprite: power-pylon } }
-            public-art:
-                filter: { kind: [public-art] }
-                draw:   { icons: { sprite: public-art } }
-            racetrack:
-                filter: { kind: [racetrack] }
-                draw:   { icons: { sprite: racetrack } }
-            ramen:
-                filter: { kind: [ramen] }
-                draw:   { icons: { sprite: ramen } }
-            real-estate:
-                filter: { kind: [estate_agent, real_estate] }
-                draw:   { icons: { sprite: real-estate } }
-            record-shop:
-                filter: { kind: [record-shop] }
-                draw:   { icons: { sprite: record-shop } }
-            recycling-facility:
-                filter: { kind: [recycling, recycling-facility] }
-                draw:   { icons: { sprite: recycling-facility } }
-            rental-car:
-                filter: { kind: [rental-car, car_rental] }
-                draw:   { icons: { sprite: rental-car } }
-            rest-area:
-                filter: { kind: [rest_area, rest-area] }
-                draw:   { icons: { sprite: rest-area } }
-            restaurant:
-                filter: { kind: [restaurant, deli] }
-                draw:   { icons: { sprite: restaurant } }
-            river:
-                filter: { kind: [river] }
-                draw:   { icons: { sprite: river } }
-            road:
-                filter: { kind: [road] }
-                draw:   { icons: { sprite: road } }
-            ruin:
-                filter: { kind: [ruins, archaeological_site] }
-                draw:   { icons: { sprite: ruin } }
-            salon-barber:
-                filter: { kind: [hairdresser, salon-barber, salon, beauty_salon] }
-                draw:   { icons: { sprite: salon-barber } }
-            school:
-                filter: { kind: [school, kindergarten] }
-                draw:   { icons: { sprite: school } }
-            ship-wreck:
-                filter: { kind: [wreck] }
-                draw:   { icons: { sprite: ship-wreck } }
-            shoe-store:
-                filter: { kind: [shoes, shoe-store, shoe_store] }
-                draw:   { icons: { sprite: shoe-store } }
-            skate-park:
-                filter: { kind: [skate-park] }
-                draw:   { icons: { sprite: skate-park } }
-            skating-rink:
-                filter: { kind: [skating-rink] }
-                draw:   { icons: { sprite: skating-rink } }
-            ski-area:
-                filter: { kind: [ski-area] }
-                draw:   { icons: { sprite: ski-area } }
-            smoke-shop:
-                filter: { kind: [smoke_shop, tobacco] }
-                draw:   { icons: { sprite: smoke-shop } }
-            soccer-field:
-                filter: { kind: [soccer-field] }
-                draw:   { icons: { sprite: soccer-field } }
-            soccer-stadium:
-                filter: { kind: [soccer-stadium] }
-                draw:   { icons: { sprite: soccer-stadium } }
-            soup-place:
-                filter: { kind: [soup-place] }
-                draw:   { icons: { sprite: soup-place } }
-            spa-massage:
-                filter: { kind: [spa, spa-massage, sauna, massage] }
-                draw:   { icons: { sprite: spa-massage } }
-            spiritual-center:
-                filter: { kind: [spiritual_center, spiritual-center, place_of_worship, wayside_chapel] }
-                draw:   { icons: { sprite: spiritual-center } }
-            sporting-goods-shop:
-                filter: { kind: [sporting_goods, sporting-goods-shop, sports, outdoor] }
-                draw:   { icons: { sprite: sporting-goods-shop } }
-            spring:
-                filter: { kind: [spring] }
-                draw:   { icons: { sprite: spring } }
-            stable:
-                filter: { kind: [stable, horse_riding] }
-                draw:   { icons: { sprite: stable } }
-            stadium:
-                filter: { kind: [stadium] }
-                draw:   { icons: { sprite: stadium } }
-            steakhouse:
-                filter: { kind: [steakhouse] }
-                draw:   { icons: { sprite: steakhouse } }
-            storage-facility:
-                filter: { kind: [storage, storage-facility] }
-                draw:   { icons: { sprite: storage-facility } }
-            subway:
-                filter: { kind: [subway] }
-                draw:   { icons: { sprite: subway } }
-            surf-shop:
-                filter: { kind: [surf-shop] }
-                draw:   { icons: { sprite: surf-shop } }
-            sushi-restaurant:
-                filter: { kind: [sushi-restaurant] }
-                draw:   { icons: { sprite: sushi-restaurant } }
-            swimming:
-                filter: { kind: [swimming] }
-                draw:   { icons: { sprite: swimming } }
-            synagogue:
-                filter: { kind: [synagogue] }
-                draw:   { icons: { sprite: synagogue } }
-            tailor-shop:
-                filter: { kind: [tailor, tailor-shop] }
-                draw:   { icons: { sprite: tailor-shop } }
-            tanning-salon:
-                filter: { kind: [tanning-salon] }
-                draw:   { icons: { sprite: tanning-salon } }
-            tattoo-parlor:
-                filter: { kind: [tattoo, tattoo_parlor, tattoo-parlor] }
-                draw:   { icons: { sprite: tattoo-parlor } }
-            taxi:
-                filter: { kind: [taxi] }
-                draw:   { icons: { sprite: taxi } }
-            tea-room:
-                filter: { kind: [tea-room] }
-                draw:   { icons: { sprite: tea-room } }
-            tennis:
-                filter: { kind: [tennis] }
-                draw:   { icons: { sprite: tennis } }
-            theme-park:
-                filter: { kind: [theme_park, theme-park, miniature_golf] }
-                draw:   { icons: { sprite: theme-park } }
-            thrift-vintage-store:
-                filter: { kind: [thrift, thrift-vintage-store, second_hand] }
-                draw:   { icons: { sprite: thrift-vintage-store } }
-            toll-booth:
-                filter: { kind: [toll_booth, checkpoint, border_control] }
-                draw:   { icons: { sprite: toll-booth } }
-            toy-game-store:
-                filter: { kind: [toys, toy-game-store, baby_goods] }
-                draw:   { icons: { sprite: toy-game-store } }
-            track:
-                filter: { kind: [track] }
-                draw:   { icons: { sprite: track } }
-            traffic-signal:
-                filter: { kind: [traffic_signals] }
-                draw:   { icons: { sprite: traffic-signal } }
-            train-station:
-                filter: { kind: [station, train-staion] }
-                draw:   { icons: { sprite: train-station } }
-            travel-agency:
-                filter: { kind: [travel-agency] }
-                draw:   { icons: { sprite: travel-agency } }
-            veterinarian:
-                filter: { kind: [pet_care, veterinarian, veterinary] }
-                draw:   { icons: { sprite: veterinarian } }
-            video-game-store:
-                filter: { kind: [video_games] }
-                draw:   { icons: { sprite: video-game-store } }
-            video-store:
-                filter: { kind: [video, video_store] }
-                draw:   { icons: { sprite: video-store } }
-            view-point:
-                filter: { kind: [viewpoint, view_point, view-point, vista] }
-                draw:   { icons: { sprite: view-point } }
-            vineyard:
-                filter: { kind: [vineyard] }
-                draw:   { icons: { sprite: vineyard } }
-            volcano:
-                filter: { kind: [volcano] }
-                draw:   { icons: { sprite: volcano } }
-            volleyball-court:
-                filter: { kind: [volleyball-court] }
-                draw:   { icons: { sprite: volleyball-court } }
-            well:
-                filter: { kind: [well, water_well] }
-                draw:   { icons: { sprite: well } }
-            whisky-bar:
-                filter: { kind: [whisky-bar] }
-                draw:   { icons: { sprite: whisky-bar } }
-            wine-bar:
-                filter: { kind: [wine-bar] }
-                draw:   { icons: { sprite: wine-bar } }
-            wine-shop:
-                filter: { kind: [wine, wine-shop] }
-                draw:   { icons: { sprite: wine-shop } }
-            winery:
-                filter: { kind: [winery, wine] }
-                draw:   { icons: { sprite: winery } }
-            wings-joint:
-                filter: { kind: [wings-joint] }
-                draw:   { icons: { sprite: wings-joint } }
-            zoo:
-                filter: { kind: [zoo] }
-                draw:   { icons: { sprite: zoo } }
-    
-    # pois:
-    #     data: { source: osm, layer: pois }
-    #     filter: { name: true, not: { kind: [peak, viewpoint, bicycle_rental, car_sharing] }, $zoom: { min: 15 } }
-    #     poi_labels:
-    #         draw: { text: { text_source: name, font: { typeface: 10pt Helvetica, fill: white } } }
-            # red:
-            #     filter: |
-            #         function () {
-            #             return feature[properties.key_text] && feature[properties.key_text].toLowerCase().indexOf(properties.value_text.toLowerCase()) > -1;
-            #         }
-            #     draw:
-            #         lines:
-            #             order: 100
-            #             color: red
-            #             width: 3px
-            #         text:
-            #             order: 100
-            #             text_source: name
-            #             font:
-            #                 typeface: 8pt Lucida Grande
-            #                 fill: white
-            #                 # stroke: { color: black, width: 4 }
 
     places:
         data: { source: osm}
@@ -2170,7 +1037,7 @@ layers:
                             typeface: italic 15pt Baskerville
                             fill: '#8f8f8f'
 
-        sea_labels:                    
+        sea_labels:
             filter:
                 $zoom: [4,5,6]
                 kind: sea
@@ -2223,7 +1090,7 @@ layers:
         #                 font:
         #                     typeface: 5pt Helvetica
         #                     capitalized: true
-        #                     fill: '#cccccc' 
+        #                     fill: '#cccccc'
         #     state_z5:
         #         filter:
         #             $zoom: [5]
@@ -2232,7 +1099,7 @@ layers:
         #                 font:
         #                     typeface: 7pt Helvetica
         #                     capitalized: true
-        #                     fill: '#cccccc' 
+        #                     fill: '#cccccc'
         #     state_z6:
         #         filter:
         #             $zoom: [6]
@@ -2241,7 +1108,7 @@ layers:
         #                 font:
         #                     typeface: 8pt Helvetica
         #                     capitalized: true
-        #                     fill: '#cccccc' 
+        #                     fill: '#cccccc'
 
         cities_z4:
             filter:
