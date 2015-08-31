@@ -843,6 +843,7 @@ layers:
             liquor-store:
                 filter: { kind: [alcohol, liquor-store, liquor] }
                 draw:   { icons: { sprite: liquor-store } }
+            market:
                 filter: { kind: [market, variety_store, boutique, dairy] }
                 draw:   { icons: { sprite: market } }
             mine:
