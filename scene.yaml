@@ -581,9 +581,29 @@ layers:
                     style: buildings
                     extrude: function () { return feature.height > 0 || $zoom >= 16; }
 
-    icons:
+
+    poi_and_landuse_labels:
         data: { source: osm, layer: [pois, landuse_labels] }
-        filter: { not: { kind: [tree, gate] }, $zoom: { min: 15 } }
+        filter: 
+            name: true
+            not: { kind: [farm, peak, tree, gate] }
+            any:
+                - area: false
+                  all:
+                      - $zoom: { min: 12 }
+                - area: true
+                  any:
+                      # show labels for smaller landuse areas at higher zooms
+                      - { $zoom: { min: 9 },  area: { min: 100000000 } }
+                      - { $zoom: { min: 10 }, area: { min: 100000000 } }
+                      - { $zoom: { min: 11 }, area: { min: 25000000 } }
+                      - { $zoom: { min: 12 }, area: { min: 5000000 } }
+                      - { $zoom: { min: 13 }, area: { min: 2000000 } }
+                      - { $zoom: { min: 14 }, area: { min: 500000 } }
+                      - { $zoom: { min: 15 }, area: { min: 100000 } }
+                      - { $zoom: { min: 15 }, area: { min: 50000 } }
+                      - { $zoom: { min: 16 }, area: { min: 20000 } }
+                      - { $zoom: { min: 18 } }
         draw:
             icons:
                 size: [[13, 12px], [15, 18px]]
@@ -609,9 +629,9 @@ layers:
             draw:
                 pois_text:
                     font:
-                        fill: '#666'
-                        typeface: 100 12px Helvetica
-                        stroke: { color: white, width: 4 }
+                        fill: black
+                        typeface: 500 12px Helvetica
+                        stroke: { color: '#999', width: 4 }
 
         park-labels:
             filter:
@@ -620,9 +640,9 @@ layers:
             draw:
                 pois_text:
                     font:
-                        fill: '#666'
-                        typeface: 100 12px Helvetica
-                        stroke: { color: white, width: 4 }
+                        fill: black
+                        typeface: 500 12px Helvetica
+                        stroke: { color: '#999', width: 4 }
 
         parking-labels:
             filter:
@@ -631,9 +651,9 @@ layers:
             draw:
                 pois_text:
                     font:
-                        fill: '#666'
-                        typeface: 100 12px Helvetica
-                        stroke: { color: white, width: 4 }
+                        fill: black
+                        typeface: 500 12px Helvetica
+                        stroke: { color: '#999', width: 4 }
 
         bus-stop-labels:
             filter:
@@ -642,9 +662,9 @@ layers:
             draw:
                 pois_text:
                     font:
-                        fill: '#666'
-                        typeface: 100 12px Helvetica
-                        stroke: { color: white, width: 4 }
+                        fill: black
+                        typeface: 500 12px Helvetica
+                        stroke: { color: '#999', width: 4 }
 
         # examples of different icons mapped to feature properties
         icons:
