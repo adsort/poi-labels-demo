@@ -584,6 +584,8 @@ layers:
     poi_icons:
         data: { source: osm, layer: pois }
         filter: { not: { kind: [tree, gate] }, $zoom: { min: 15 } }
+        properties:
+            current: none
         draw:
             icons:
                 size: [[13, 12px], [15, 18px]]
@@ -1357,9 +1359,20 @@ layers:
             zoo:
                 filter: { kind: [zoo] }
                 draw:   { icons: { sprite: zoo } }
+            selected:
+                filter: |
+                        function () {
+                            return feature.id == properties.current;
+                        }
+                draw:
+                    icons:
+                        size: 32px
+    
                 
     landuse_labels:
         data: { source: osm, layer: landuse_labels }
+        properties:
+            current: none
         filter: 
             name: true
             not: { kind: [farm] }
@@ -2115,6 +2128,15 @@ layers:
             zoo:
                 filter: { kind: [zoo] }
                 draw:   { icons: { sprite: zoo } }
+
+            selected:
+                filter: |
+                        function () {
+                            return feature.id == properties.current;
+                        }
+                draw:
+                    icons:
+                        size: 32px
     
     # pois:
     #     data: { source: osm, layer: pois }
