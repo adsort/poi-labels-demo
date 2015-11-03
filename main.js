@@ -64,7 +64,6 @@ map = (function () {
                 var feature = selection.feature;
                 if (feature != null) {
                     // console.log("selection map: " + JSON.stringify(feature));
-
                     var label = '';
                     if (feature.properties.name != null) {
                         label = feature.properties.name;
@@ -79,6 +78,13 @@ map = (function () {
                     else if (selection_info.parentNode != null) {
                         selection_info.parentNode.removeChild(selection_info);
                     }
+
+                    if (feature.properties.id != null) {
+                        scene.config.layers["landuse_labels"].properties.current = feature.properties.id;
+                        scene.config.layers["poi_icons"].properties.current = feature.properties.id;
+                        scene.rebuildGeometry();
+                    }
+
                 }
                 else if (selection_info.parentNode != null) {
                     selection_info.parentNode.removeChild(selection_info);
@@ -93,7 +99,7 @@ map = (function () {
             }
         });
         
-        // Show selected feature on hover
+        // Show selected feature on click
         scene.container.addEventListener('click', function (event) {
             var pixel = { x: event.clientX, y: event.clientY };
 
