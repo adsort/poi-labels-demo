@@ -1,6 +1,6 @@
 # poi-labels-demo
 
-A demo showing contextual highway styles using the [Tangram](http://github.com/tangrams/tangram) library.
+A demo showing sprites and text labels on POIs using the [Tangram](http://github.com/tangrams/tangram) library.
 
 Live demo: http://tangrams.github.io/poi-labels-demo
 
