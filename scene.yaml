@@ -388,19 +388,19 @@ layers:
 
             highway:
                 filter: { kind: [highway, trunk], $zoom: { min: 7 } }
-                draw: { text: { font: { typeface: 500 10pt Helvetica, fill: white, stroke: { color: black, width: 4}}}}
+                draw: { text: { font: { weight: 500, size: 10pt, family: Helvetica, fill: white, stroke: { color: black, width: 4}}}}
             not_highway:
                 filter: { not: { kind: [highway, trunk] }, $zoom: { min: 10 } }
-                draw: { text: { font: { typeface: 100 10pt Helvetica, fill: white }, stroke: {color: black, width: 4}}}
+                draw: { text: { font: { weight: 100, size: 10pt, family: Helvetica, fill: white }, stroke: {color: black, width: 4}}}
                 major_road:
                     filter: { kind: major_road, $zoom: { min: 10 }}
-                    draw: { text: { font: { typeface: 100 10pt Helvetica, fill: white, stroke: {color: black, width: 4}}}}
+                    draw: { text: { font: { weight: 100, size: 10pt, family: Helvetica, fill: white, stroke: {color: black, width: 4}}}}
                 minor_road:
                     filter: { kind: minor_road, railway: false, $zoom: { min:15 }}
-                    draw: { text: { font: { typeface: 100 10pt Helvetica, fill: white, stroke: {color: black, width: 4}}}}
+                    draw: { text: { font: { weight: 100, size: 10pt, family: Helvetica, fill: white, stroke: {color: black, width: 4}}}}
                 small:
                     filter: { highway: [residential, unclassified], $zoom: { max:15 }}
-                    draw: { text: { font: { typeface: 100 10pt Helvetica, fill: white, stroke: {color: black, width: 4}}}}
+                    draw: { text: { font: { weight: 100, size: 10pt, family: Helvetica, fill: white, stroke: {color: black, width: 4}}}}
 
     roads:
         data: { source: osm, layer: roads }
@@ -630,7 +630,9 @@ layers:
                 pois_text:
                     font:
                         fill: black
-                        typeface: 500 12px Helvetica
+                        weight: 500
+                        size: 12px
+                        family: Helvetica
                         stroke: { color: '#999', width: 4 }
 
         park-labels:
@@ -641,7 +643,9 @@ layers:
                 pois_text:
                     font:
                         fill: black
-                        typeface: 500 12px Helvetica
+                        weight: 500
+                        size: 12px
+                        family: Helvetica
                         stroke: { color: '#999', width: 4 }
 
         parking-labels:
@@ -652,7 +656,9 @@ layers:
                 pois_text:
                     font:
                         fill: black
-                        typeface: 500 12px Helvetica
+                        weight: 500
+                        size: 12px
+                        family: Helvetica
                         stroke: { color: '#999', width: 4 }
 
         bus-stop-labels:
@@ -663,7 +669,9 @@ layers:
                 pois_text:
                     font:
                         fill: black
-                        typeface: 500 12px Helvetica
+                        weight: 500
+                        size: 12px
+                        family: Helvetica
                         stroke: { color: '#999', width: 4 }
 
         # examples of different icons mapped to feature properties
@@ -1038,7 +1046,9 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: italic 12pt Baskerville
+                            style: italic
+                            size: 12pt
+                            family: Baskerville
                             fill: '#8f8f8f'
             ocean_z3:
                 filter:
@@ -1046,7 +1056,9 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: italic 14pt Baskerville
+                            style: italic
+                            size: 14pt
+                            family: Baskerville
                             fill: '#8f8f8f'
             ocean_z4:
                 filter:
@@ -1054,7 +1066,9 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: italic 15pt Baskerville
+                            style: italic
+                            size: 15pt
+                            family: Baskerville
                             fill: '#8f8f8f'
 
         sea_labels:
@@ -1064,7 +1078,9 @@ layers:
             draw:
                 text:
                     font:
-                        typeface: italic 11pt Baskerville
+                        style: italic
+                        size: 11pt
+                        family: Baskerville
                         fill: '#8f8f8f'
 
         continent_labels:
@@ -1076,7 +1092,8 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: 7pt Helvetica
+                            size: 7pt
+                            family: Helvetica
                             capitalized: true
                             fill: white
 
@@ -1089,7 +1106,8 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: 8pt Helvetica
+                            size: 8pt
+                            family: Helvetica
                             fill: white
             country_z6:
                 filter:
@@ -1097,7 +1115,8 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: 6pt Helvetica
+                            size: 6pt
+                            family: Helvetica
                             fill: white
         # state_labels:
         #     filter:
@@ -1108,7 +1127,8 @@ layers:
         #         draw:
         #             text:
         #                 font:
-        #                     typeface: 5pt Helvetica
+        #                     size: 5pt
+        #                     family: Helvetica
         #                     capitalized: true
         #                     fill: '#cccccc'
         #     state_z5:
@@ -1117,7 +1137,8 @@ layers:
         #         draw:
         #             text:
         #                 font:
-        #                     typeface: 7pt Helvetica
+        #                     size: 7pt
+        #                     family: Helvetica
         #                     capitalized: true
         #                     fill: '#cccccc'
         #     state_z6:
@@ -1126,7 +1147,8 @@ layers:
         #         draw:
         #             text:
         #                 font:
-        #                     typeface: 8pt Helvetica
+        #                     size: 8pt
+        #                     family: Helvetica
         #                     capitalized: true
         #                     fill: '#cccccc'
 
@@ -1140,7 +1162,8 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: 6pt Helvetica
+                            size: 6pt
+                            family: Helvetica
                             fill: white
             city2:
                 filter:
@@ -1148,7 +1171,8 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: 6 pt Helvetica
+                            size: 6
+                            family: pt Helvetica
                             fill: white
         cities_z6:
             filter:
@@ -1160,7 +1184,8 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: 6pt Helvetica
+                            size: 6pt
+                            family: Helvetica
                             fill: white
             cityz6-2:
                 filter:
@@ -1168,7 +1193,8 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: 6pt Helvetica
+                            size: 6pt
+                            family: Helvetica
                             fill: white
         cities_z7:
             filter:
@@ -1180,7 +1206,8 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: 6pt Helvetica
+                            size: 6pt
+                            family: Helvetica
                             fill: white
             cityz7-2:
                 filter:
@@ -1188,7 +1215,8 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: 6pt Helvetica
+                            size: 6pt
+                            family: Helvetica
                             fill: white
             cityz7-3:
                 filter:
@@ -1196,5 +1224,6 @@ layers:
                 draw:
                     text:
                         font:
-                            typeface: 6pt Helvetica
+                            size: 6pt
+                            family: Helvetica
                             fill: white
